@@ -46,6 +46,9 @@ namespace mstate {
 
     }
 
+    let _stateId: number
+    let _machineId: number
+
     /**
      * define state
      * @param aStateMachine StateMachines
@@ -58,14 +61,12 @@ namespace mstate {
     //% weight=180
     //% group="Declare"
     export function defineState(aStateMachine: StateMachines, aStateName: string, body: () => void) {
-        mmachine.defineState(aStateMachine, mmachine.namestore.getNameIdOrNew(aStateName), function () {
-            const [enabled, machineId, stateId] = mmachine.getDefineMachineState()
-            if (enabled) {
-                body()
-                // uml
-                mstate._simuStateUml(machineId, stateId)
-            }
-        })
+        _stateId = mmachine.namestore.getNameIdOrNew(aStateName)
+        _machineId = aStateMachine
+        body()
+        // uml
+        mstate._simuStateUml(_machineId, _stateId)
+        _stateId = -1   // deactive
     }
 
     /**
@@ -77,11 +78,10 @@ namespace mstate {
     //% weight=170
     //% group="Declare"
     export function declareEntry(body: () => void) {
-        const [enabled, machineId, stateId] = mmachine.getDefineMachineState()
-        if (enabled) {
-            mmachine.getState(machineId, stateId).entryActionList.push(body)
+        if (mmachine.namestore.NONE_ID <= _stateId) {
+            mmachine.getState(_machineId, _stateId).entryActionList.push(body)
             // uml
-            mstate._simuStateUml(machineId, stateId)
+            mstate._simuStateUml(_machineId, _stateId)
         }
     }
 
@@ -98,13 +98,10 @@ namespace mstate {
     //% weight=160
     //% group="Declare"
     export function declareDoActivity(aEvery: number, body: (counter: number) => void) {
-        const [enabled, machineId, stateId] = mmachine.getDefineMachineState()
-        if (enabled) {
-            if (mmachine.namestore.NONE_ID != stateId) {
-                mmachine.getState(machineId, stateId).doActivityList.push(new mmachine.DoActivity(aEvery, body))
-                // uml
-                mstate._simuStateUml(machineId, stateId)
-            }
+        if (mmachine.namestore.NONE_ID < _stateId) {
+            mmachine.getState(_machineId, _stateId).doActivityList.push(new mmachine.DoActivity(aEvery, body))
+            // uml
+            mstate._simuStateUml(_machineId, _stateId)
         }
     }
 
@@ -117,11 +114,10 @@ namespace mstate {
     //% weight=150
     //% group="Declare"
     export function declareExit(body: () => void) {
-        const [enabled, machineId, stateId] = mmachine.getDefineMachineState()
-        if (enabled) {
-            mmachine.getState(machineId, stateId).exitActionList.push(body)
+        if (mmachine.namestore.NONE_ID <= _stateId) {
+            mmachine.getState(_machineId, _stateId).exitActionList.push(body)
             // uml
-            mstate._simuStateUml(machineId, stateId)
+            mstate._simuStateUml(_machineId, _stateId)
         }
     }
 
@@ -136,12 +132,9 @@ namespace mstate {
     //% weight=140
     //% group="Transition"
     export function declareSimpleTransition(aTriggerName: string, aTargetName: string) {
-        const [enabled, machineId, _] = mmachine.getDefineMachineState()
-        if (enabled) {
-            declareStateTransition(aTriggerName, [aTargetName], function () {
-                mstate.traverse(machineId, 0)
-            })
-        }
+        declareStateTransition(aTriggerName, [aTargetName], function () {
+            mstate.traverse(_machineId, 0)
+        })
     }
 
     /**
@@ -157,16 +150,15 @@ namespace mstate {
     //% weight=130
     //% group="Transition"
     export function declareStateTransition(aTriggerName: string, aTargetNameList: string[], body: () => void) {
-        const [enabled, machineId, stateId] = mmachine.getDefineMachineState()
-        if ((enabled) && (mmachine.namestore.NONE_ID != stateId)) {
+        if (mmachine.namestore.NONE_ID < _stateId) {
             const triggerId = mmachine.namestore.getNameIdOrNew(aTriggerName)
             const targetIdList: number[] = []
             for (const s of aTargetNameList) {
                 targetIdList.push(mmachine.namestore.getNameIdOrNew(s))
             }
-            mmachine.getState(machineId, stateId).stateTransitionList.push(new mmachine.StateTransition(triggerId, targetIdList, body))
+            mmachine.getState(_machineId, _stateId).stateTransitionList.push(new mmachine.StateTransition(triggerId, targetIdList, body))
             // uml
-            mstate._simuTransitionUml(machineId, stateId)
+            mstate._simuTransitionUml(_machineId, _stateId)
         }
     }
 

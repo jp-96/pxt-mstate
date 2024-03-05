@@ -260,18 +260,6 @@ namespace mmachine {
         }
     }
 
-    let _defineMachineState: [boolean, StateMachines, number] = [false, undefined, undefined]
-
-    export function defineState(machineId: number, stateId: number, body: () => void) {
-        _defineMachineState = [true, machineId, stateId]
-        body()
-        _defineMachineState = [false, undefined, undefined]
-    }
-
-    export function getDefineMachineState() {
-        return _defineMachineState
-    }
-
     const _stateMachineList: mmachine.StateMachine[] = []
 
     export function getStateMachine(machineId: number) {
