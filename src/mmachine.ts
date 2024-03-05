@@ -21,13 +21,6 @@
 // SOFTWARE.
 
 namespace mmachine {
-    export type GetElapsedMillisCallback = () => number
-
-    /**
-     * *device-dependent:* getElapsedMillis;
-     * gets the number of milliseconds elapsed since power on.
-     */
-    export let getElapsedMillis: GetElapsedMillisCallback // = () => 0
 
     export type QueueRunToCompletionCallback = (machineId: number) => void
 
@@ -196,7 +189,7 @@ namespace mmachine {
             return false
         }
 
-        runToCompletion() {
+        runToCompletion(currentMillis: number) {
             let nextStep: RunToCompletionStep
             if (this._isDelayed) {
                 this._isDelayed = false
@@ -235,7 +228,7 @@ namespace mmachine {
                             v.counterIfPositive = -1  // clear
                             intervalList.push(v.interval_ms)
                         }
-                        resetDoCounterSchedules(this.machineId, intervalList)
+                        resetDoCounterSchedules(this.machineId, intervalList, currentMillis)
                         // entry
                         for (const cb of this._currentState.entryActionList) {
                             cb()
@@ -260,18 +253,6 @@ namespace mmachine {
         }
     }
 
-    let _defineMachineState: [boolean, StateMachines, number] = [false, undefined, undefined]
-
-    export function defineState(machineId: number, stateId: number, body: () => void) {
-        _defineMachineState = [true, machineId, stateId]
-        body()
-        _defineMachineState = [false, undefined, undefined]
-    }
-
-    export function getDefineMachineState() {
-        return _defineMachineState
-    }
-
     const _stateMachineList: mmachine.StateMachine[] = []
 
     export function getStateMachine(machineId: number) {
@@ -288,22 +269,21 @@ namespace mmachine {
         return getStateMachine(machineId).getStateOrNew(stateId)
     }
 
-    export function runToCompletion(machineId: number) {
-        getStateMachine(machineId).runToCompletion()
+    export function runToCompletion(machineId: number, currentMillis: number) {
+        getStateMachine(machineId).runToCompletion(currentMillis)
     }
 
     class DoCounterSchedule {
         machineId: number
         doActivityIndex: number
         interval: number
-        nextTimestamp: number
+        nextMillis: number
         counter: number
     }
 
     let _doCounterScheduleList: DoCounterSchedule[] = []
 
-    function resetDoCounterSchedules(machineId: number, intervalList: number[]) {
-        const currentTimestamp = getElapsedMillis()
+    function resetDoCounterSchedules(machineId: number, intervalList: number[], currentMillis: number) {
         _doCounterScheduleList = _doCounterScheduleList.filter(item => machineId != item.machineId)
         intervalList.forEach((value, index) => {
             if (0 < value) {
@@ -312,19 +292,18 @@ namespace mmachine {
                 schedule.machineId = machineId
                 schedule.doActivityIndex = index
                 schedule.interval = value
-                schedule.nextTimestamp = currentTimestamp + schedule.interval
+                schedule.nextMillis = currentMillis + schedule.interval
                 schedule.counter = 0
             }
         })
     }
 
-    export function idleTick() {
-        const currentTimestamp = getElapsedMillis()
+    export function idleTick(currentMillis: number) {
         // do-counter scheduler
         for (const schedule of _doCounterScheduleList) {
-            if (currentTimestamp >= schedule.nextTimestamp) {
-                while (currentTimestamp >= schedule.nextTimestamp) {
-                    schedule.nextTimestamp = schedule.nextTimestamp + schedule.interval
+            if (currentMillis >= schedule.nextMillis) {
+                while (currentMillis >= schedule.nextMillis) {
+                    schedule.nextMillis = schedule.nextMillis + schedule.interval
                     schedule.counter = schedule.counter + 1
                 }
                 const doActivity = getStateMachine(schedule.machineId)._currentState.doActivityList[schedule.doActivityIndex]
