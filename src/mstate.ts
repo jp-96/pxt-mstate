@@ -24,10 +24,6 @@ namespace mstate {
 
         mstate._doc = console.log
 
-        mmachine.getElapsedMillis = () =>
-            // milliseconds
-            control.millis()
-
         mmachine.queueRunToCompletion = (machineId: number) =>
             // raise event : post run-to-completion event queue for calling back runToCompletion()
             control.raiseEvent(MSTATE_BUS_ID.MSTATE_ID_UPDATE, machineId)
@@ -35,13 +31,13 @@ namespace mstate {
         control.onEvent(MSTATE_BUS_ID.MSTATE_ID_UPDATE, 0, function () {
             // on event : post run-to-completion event queue for calling back runToCompletion()
             const machineId = control.eventValue()
-            mmachine.runToCompletion(machineId)
+            mmachine.runToCompletion(machineId, control.millis())
         })
 
         basic.forever(function () {
-            //  do-counter : calling idleTick()
+            // do-counter : calling idleTick()
             // loop - 20ms
-            mmachine.idleTick()
+            mmachine.idleTick(control.millis())
         })
 
     }
