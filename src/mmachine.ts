@@ -120,7 +120,7 @@ namespace mmachine {
         traverseAt: number   // >=0: selected, <0: unselected
         _traversingTargetId: number
         _currentState: State
-        _isDelayed: boolean
+        _waitPointNext: RunToCompletionStep
 
         constructor(machineId: number) {
             this._stateList = []
@@ -128,7 +128,7 @@ namespace mmachine {
             this.triggerArgs = []
             this.traverseAt = StateMachine.TRAVERSE_AT_UNSELECTED
             this._traversingTargetId = namestore.NONE_ID
-            this._isDelayed = false
+            this._waitPointNext = RunToCompletionStep.EvalTrigger
 
             this.machineId = machineId
 
@@ -190,13 +190,7 @@ namespace mmachine {
         }
 
         runToCompletion(currentMillis: number) {
-            let nextStep: RunToCompletionStep
-            if (this._isDelayed) {
-                this._isDelayed = false
-                nextStep = RunToCompletionStep.EvalCompletion
-            } else {
-                nextStep = RunToCompletionStep.EvalTrigger
-            }
+            let nextStep: RunToCompletionStep = this._waitPointNext
             while (RunToCompletionStep.WaitPoint != nextStep) {
                 switch (nextStep) {
                     case RunToCompletionStep.EvalTrigger:
@@ -206,6 +200,7 @@ namespace mmachine {
                             nextStep = RunToCompletionStep.EvalCompletion
                         } else {
                             nextStep = RunToCompletionStep.WaitPoint
+                            this._waitPointNext = RunToCompletionStep.EvalTrigger
                         }
                         break;
                     case RunToCompletionStep.EvalCompletion:
@@ -238,7 +233,7 @@ namespace mmachine {
                             doActivity.execute(0)   // counter = 0
                         }
                         nextStep = RunToCompletionStep.WaitPoint
-                        this._isDelayed = true
+                        this._waitPointNext = RunToCompletionStep.EvalCompletion
                         queueRunToCompletion(this.machineId)
                         break;
                     default:    // WaitPoint
