@@ -32,9 +32,9 @@ namespace mstate {
 
         // mstate._doc = console.log
 
-        // mmachine.queueRunToCompletion = (machineId: number) =>
-        //     // raise event : post run-to-completion event queue for calling back runToCompletion()
-        //     control.raiseEvent(MSTATE_BUS_ID.MSTATE_ID_UPDATE, machineId)
+        mmachine.queueRunToCompletion = (machineId: number) =>
+            // raise event : post run-to-completion event queue for calling back runToCompletion()
+            control.raiseEvent(MSTATE_BUS_ID.MSTATE_ID_UPDATE, machineId)
 
         control.onEvent(MSTATE_BUS_ID.MSTATE_ID_UPDATE, 0, function () {
             // on event : post run-to-completion event queue for calling back runToCompletion()
