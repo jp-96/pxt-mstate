@@ -39,7 +39,7 @@ namespace mstate {
         control.onEvent(MSTATE_BUS_ID.MSTATE_ID_UPDATE, 0, function () {
             // on event : post run-to-completion event queue for calling back runToCompletion()
             const machineId = control.eventValue()
-            // mmachine.runToCompletion(machineId, control.millis())
+            mmachine.runToCompletion(machineId, control.millis())
         })
 
         basic.forever(function () {
