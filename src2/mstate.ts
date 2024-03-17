@@ -254,10 +254,10 @@ namespace mstate {
     //% weight=70
     //% group="UML"
     //% advanced=true
-    //% shim=mstate::dummy_exportUml
+    //% shim=dummy::uml_expo
     export function exportUml(aStateMachine: StateMachines, aStateName: string, aMode: ModeExportUML = ModeExportUML.Both) {
         // // uml
-        // mstate._simuExportUml(aStateMachine, aStateName, aMode)
+        console.log("exportUml")
     }
 
     /**
@@ -269,24 +269,11 @@ namespace mstate {
     //% weight=60
     //% group="UML"
     //% advanced=true
-    //% shim=mstate::dummy_descriptionUml
+    //% shim=dummy::uml_desc
     export function descriptionUml(aDescription: string) {
         // // uml
         // mstate._simuDescriptionUml(aDescription)
-    }
-
-    /**
-     * UML, descriptions
-     * @param aDescriptionList array of description
-     */
-    //% block="(UML) descriptions $aDescriptionList"
-    //% weight=50
-    //% group="UML"
-    //% advanced=true
-    //% shim=mstate::dummy_descriptionsUml
-    export function descriptionsUml(aDescriptionList: string[]) {
-        // // uml
-        // mstate._simuDescriptionsUml(aDescriptionList)
+        console.log("descriptionUml")
     }
 
 }

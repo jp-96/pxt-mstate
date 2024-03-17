@@ -48,7 +48,8 @@ mstate.defineState(StateMachines.M0, "Fast", function () {
             blinkLED()
         }
     })
-    mstate.descriptionsUml(["auto && 15times", ">5s"])
+    mstate.descriptionUml("auto && 15times")
+    mstate.descriptionUml(">5s")
     mstate.declareStateTransition("", ["Slow", "On"], function () {
         if (15 == times) {
             mstate.traverse(StateMachines.M0, 0)
@@ -65,7 +66,8 @@ mstate.defineState(StateMachines.M0, "Fast", function () {
 // - Initialize On/Blink
 // - LED Heart
 mstate.defineState(StateMachines.M0, "On", function () {
-    mstate.descriptionsUml(["auto=OFF", "Heart icon"])
+    mstate.descriptionUml("auto=OFF")
+    mstate.descriptionUml("Heart icon")
     mstate.declareEntry(function () {
         auto = 0
         led.setBrightness(255)
