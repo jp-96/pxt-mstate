@@ -43,9 +43,9 @@ namespace mstate {
         })
 
         basic.forever(function () {
-            // // do-counter : calling idleTick()
-            // // loop - 20ms
-            // mmachine.idleTick(control.millis())
+            // do-counter : calling idleTick()
+            // loop - 20ms
+            mmachine.idleTick(control.millis())
         })
 
     }
