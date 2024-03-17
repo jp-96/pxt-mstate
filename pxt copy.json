@@ -10,8 +10,11 @@
         "README.md",
         "enums.d.ts",
         "shims.d.ts",
-        "src2/mstate.ts",
-        "src2/mstateuml.cpp"
+        "src/mmachine.ts",
+        "src/mstate.ts",
+        "src/mstatedevice.h",
+        "src/mstateuml.cpp",
+        "src/mstateuml.ts"
     ],
     "testFiles": [
         "test.ts"
