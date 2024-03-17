@@ -11,7 +11,8 @@
         "enums.d.ts",
         "shims.d.ts",
         "src2/dummy.cpp",
-        "src2/mstate.ts"
+        "src2/mstate.ts",
+        "src2/mstatedevice.h"
     ],
     "testFiles": [
         "test.ts"

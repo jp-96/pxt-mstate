@@ -74,22 +74,6 @@ namespace mstate {
     }
 
     /**
-     * declare entry action.
-     * @param body code to run
-     */
-    //% block="mstate on entry"
-    //% handlerStatement
-    //% weight=170
-    //% group="Declare"
-    export function declareEntry(body: () => void) {
-        // if (mmachine.namestore.NONE_ID <= _stateId) {
-        //     mmachine.getState(_machineId, _stateId).entryActionList.push(body)
-        //     // uml
-        //     mstate._simuStateUml(_machineId, _stateId)
-        // }
-    }
-
-    /**
      * declare doActivity.
      * @param aEvery interval time (milliseconds)
      * @param body code to run
@@ -107,38 +91,6 @@ namespace mstate {
         //     // uml
         //     mstate._simuStateUml(_machineId, _stateId)
         // }
-    }
-
-    /**
-     * declare exit action.
-     * @param body code to run
-     */
-    //% block="mstate on exit"
-    //% handlerStatement
-    //% weight=150
-    //% group="Declare"
-    export function declareExit(body: () => void) {
-        // if (mmachine.namestore.NONE_ID <= _stateId) {
-        //     mmachine.getState(_machineId, _stateId).exitActionList.push(body)
-        //     // uml
-        //     mstate._simuStateUml(_machineId, _stateId)
-        // }
-    }
-
-    /**
-     * declare simple transition.
-     * @param aTriggerName trigger name
-     * @param aTargetName target state name
-     */
-    //% block="mstate transition trigger $aTriggerName target $aTargetName"
-    //% aTriggerName.defl="e"
-    //% aTargetName.defl="a"
-    //% weight=140
-    //% group="Transition"
-    export function declareSimpleTransition(aTriggerName: string, aTargetName: string) {
-        declareStateTransition(aTriggerName, [aTargetName], function () {
-            mstate.traverse(_machineId, 0)
-        })
     }
 
     /**
@@ -195,32 +147,17 @@ namespace mstate {
     }
 
     /**
-     * send trigger
-     * @param aStateMachine StateMachines
-     * @param aTriggerName trigger name
-     */
-    //% block="send $aStateMachine $aTriggerName"
-    //% aStateMachine.defl=StateMachines.M0
-    //% aTriggerName.defl="e"
-    //% weight=100
-    //% group="Command"
-    export function sendTrigger(aStateMachine: StateMachines, aTriggerName: string) {
-        sendTriggerArgs(aStateMachine, aTriggerName, [])
-    }
-
-    /**
      * send trigger with args
      * @param aStateMachine StateMachines
      * @param aTriggerName trigger name
      * @param aTriggerArgs trigger args
      */
-    //% block="send $aStateMachine $aTriggerName $aTriggerArgs"
+    //% block="send $aStateMachine $aTriggerName||$aTriggerArgs"
     //% aStateMachine.defl=StateMachines.M0
     //% aTriggerName.defl="e"
     //% weight=90
     //% group="Command"
-    //% advanced=true
-    export function sendTriggerArgs(aStateMachine: StateMachines, aTriggerName: string, aTriggerArgs: number[]) {
+    export function sendTriggerArgs(aStateMachine: StateMachines, aTriggerName: string, aTriggerArgs?: number[]) {
         // const triggerId = mmachine.namestore.getNameIdOrNew(aTriggerName)
         // mmachine.getStateMachine(aStateMachine).send(triggerId, aTriggerArgs)
     }
