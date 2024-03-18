@@ -65,12 +65,12 @@ namespace mstate {
     //% weight=180
     //% group="Declare"
     export function defineState(aStateMachine: StateMachines, aStateName: string, body: () => void) {
-        // _stateId = mmachine.namestore.getNameIdOrNew(aStateName)
-        // _machineId = aStateMachine
-        // body()
+        _stateId = mmachine.namestore.getNameIdOrNew(aStateName)
+        _machineId = aStateMachine
+        body()
         // // uml
         // mstate._simuStateUml(_machineId, _stateId)
-        // _stateId = -1   // deactive
+        _stateId = -1   // deactive
     }
 
     /**
