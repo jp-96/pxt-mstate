@@ -14,5 +14,29 @@ namespace dummy
     {
         // only for the simulator
     }
+    
+    //%
+    StringData **uml_last(int i)
+    {
+        // only for the simulator
+    }
+
+    //%
+    void uml_state(int i, int j)
+    {
+        // only for the simulator
+    }
+
+    //%
+    void uml_trans(int i, int j)
+    {
+        // only for the simulator
+    }
+
+    //%
+    StringData *uml_name(int i)
+    {
+        // only for the simulator
+    }
 
 }
