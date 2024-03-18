@@ -25,19 +25,10 @@ enum ModeExportUML {
 //% groups="['Command', 'Declare', 'Transition', 'UML]"
 namespace mstate {
 
-    export type OutputDocCallback = (value: any) => void
-
-    /**
-     * *device-dependent:* (internal) UML, export UML
-     */
-    export let _doc: OutputDocCallback = (value: any) => { }
-
     /**
      * *device-dependent:* initialize and activate
      */
     namespace deviceSetup {
-
-        mstate._doc = console.log
 
         mmachine.queueRunToCompletion = (machineId: number) =>
             // raise event : post run-to-completion event queue for calling back runToCompletion()
@@ -312,6 +303,7 @@ namespace mstate {
     //% shim=shimfake::simuExportUml
     export function _simuExportUml(aStateMachine: StateMachines, aStateName: string, aMode: ModeExportUML) {
         // for the simulator
+        const _doc = console.log
         const outputJson = 0 == (aMode & 3)
         const outputTriggerTable = 0 != (aMode & 2)
         const outputStateDiagram = 0 != (aMode & 1)
