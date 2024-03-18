@@ -158,8 +158,8 @@ namespace mstate {
     //% weight=90
     //% group="Command"
     export function sendTriggerArgs(aStateMachine: StateMachines, aTriggerName: string, aTriggerArgs?: number[]) {
-        // const triggerId = mmachine.namestore.getNameIdOrNew(aTriggerName)
-        // mmachine.getStateMachine(aStateMachine).send(triggerId, aTriggerArgs)
+        const triggerId = mmachine.namestore.getNameIdOrNew(aTriggerName)
+        mmachine.getStateMachine(aStateMachine).send(triggerId, aTriggerArgs)
     }
 
     /**
@@ -173,8 +173,8 @@ namespace mstate {
     //% weight=80
     //% group="Command"
     export function start(aStateMachine: StateMachines, aStateName: string) {
-        // const stateId = mmachine.namestore.getNameIdOrNew(aStateName)
-        // mmachine.getStateMachine(aStateMachine).send(mmachine.namestore.SYS_START_TRIGGER_ID, [stateId])    // StarterTransition
+        const stateId = mmachine.namestore.getNameIdOrNew(aStateName)
+        mmachine.getStateMachine(aStateMachine).send(mmachine.namestore.SYS_START_TRIGGER_ID, [stateId])    // StarterTransition
     }
 
     /**
