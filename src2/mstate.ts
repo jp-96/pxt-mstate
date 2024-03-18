@@ -190,7 +190,7 @@ namespace mstate {
     //% weight=70
     //% group="UML"
     //% advanced=true
-    //% shim=dummy::uml_expo
+    //% shim=shimfake::exportUml
     export function exportUml(aStateMachine: StateMachines, aStateName: string, aMode: ModeExportUML = ModeExportUML.Both) {
         // // uml
         console.log("exportUml")
@@ -205,7 +205,7 @@ namespace mstate {
     //% weight=60
     //% group="UML"
     //% advanced=true
-    //% shim=dummy::uml_desc
+    //% shim=shimfake::descriptionUml
     export function descriptionUml(aDescription: string) {
         // // uml
         // mstate._simuDescriptionUml(aDescription)

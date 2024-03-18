@@ -1,6 +1,6 @@
 #include "pxt.h"
 
-namespace dummy
+namespace shimfake
 {
 
     //%
