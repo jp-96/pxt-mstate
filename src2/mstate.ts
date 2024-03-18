@@ -37,7 +37,7 @@ namespace mstate {
      */
     namespace deviceSetup {
 
-        // mstate._doc = console.log
+        mstate._doc = console.log
 
         mmachine.queueRunToCompletion = (machineId: number) =>
             // raise event : post run-to-completion event queue for calling back runToCompletion()
@@ -184,6 +184,21 @@ namespace mstate {
     }
 
     /**
+     * UML, description
+     * @param aDescription description
+     */
+    //% block="(UML) description $aDescription"
+    //% aDescription.defl="a"
+    //% weight=70
+    //% group="UML"
+    //% advanced=true
+    //% shim=shimfake::simuDescriptionUml
+    export function descriptionUml(aDescription: string) {
+        // uml
+        _simuDescriptionUml(aDescription)
+    }
+
+    /**
      * UML, export
      * @param aStateMachine StateMachines
      * @param aStateName default state name
@@ -194,30 +209,13 @@ namespace mstate {
     //% aStateMachine.defl=StateMachines.M0
     //% aStateName.defl="a"
     //% aMode.defl=ModeExportUML.Both
-    //% weight=70
-    //% group="UML"
-    //% advanced=true
-    //% shim=shimfake::exportUml
-    export function exportUml(aStateMachine: StateMachines, aStateName: string, aMode: ModeExportUML = ModeExportUML.Both) {
-        // uml
-        //_simuExportUml(aStateMachine,aStateName,aMode)
-        console.log("exportUml")
-    }
-
-    /**
-     * UML, description
-     * @param aDescription description
-     */
-    //% block="(UML) description $aDescription"
-    //% aDescription.defl="a"
     //% weight=60
     //% group="UML"
     //% advanced=true
-    //% shim=shimfake::descriptionUml
-    export function descriptionUml(aDescription: string) {
-        // // uml
-        // mstate._simuDescriptionUml(aDescription)
-        console.log("descriptionUml")
+    //% shim=shimfake::simuExportUml
+    export function exportUml(aStateMachine: StateMachines, aStateName: string, aMode: ModeExportUML = ModeExportUML.Both) {
+        // uml
+        _simuExportUml(aStateMachine, aStateName, aMode)
     }
 
     /**
@@ -231,7 +229,7 @@ namespace mstate {
      * @param nameId state id or trigger id
      * @returns state name (string) or trigger name (string): "[id]" if undefined
      */
-    //% shim=mstate::dummy_simuConvName
+    //% shim=shimfake::simuConvName
     export function _simuConvName(nameId: number): string {
         // for the simulator
         const storeNameId = mmachine.namestore.storeNameId
@@ -243,33 +241,11 @@ namespace mstate {
     }
 
     /**
-     * (internal) UML, description
-     * @param aDescription description
-     */
-    //% shim=mstate::dummy_descriptionUml
-    export function _simuDescriptionUml(aDescription: string) {
-        // for the simulator
-        _lastDescriptionList.push(aDescription)
-    }
-
-    /**
-     * (internal) UML, descriptions
-     * @param aDescriptionList array of description
-     */
-    //% shim=mstate::dummy_descriptionsUml
-    export function _simuDescriptionsUml(aDescriptionList: string[]) {
-        // for the simulator
-        for (const s of aDescriptionList) {
-            _simuDescriptionUml(s)
-        }
-    }
-
-    /**
      * (internal) UML, last description list
      * @param n (-1):all, (0): empty [], (>0): n from last
      * @returns list of description
      */
-    //% shim=mstate::dummy_simuLastDescriptionListUML
+    //% shim=shimfake::simuLastDescriptionListUML
     export function _simuLastDescriptionListUML(n: number): string[] {
         // for the simulator
         const ret: string[] = []
@@ -291,7 +267,7 @@ namespace mstate {
      * @param machineId  machine id
      * @param stateId state name
      */
-    //% shim=mstate::dummy_simuStateUml
+    //% shim=shimfake::simuStateUml
     export function _simuStateUml(machineId: number, stateId: number) {
         // for the simulator
         const state: any = mmachine.getState(machineId, stateId)
@@ -308,7 +284,7 @@ namespace mstate {
      * @param machineId machine id
      * @param stateId state id
      */
-    //% shim=mstate::dummy_simuTransitionUml
+    //% shim=shimfake::simuTransitionUml
     export function _simuTransitionUml(machineId: number, stateId: number) {
         // for the simulator
         const state = mmachine.getState(machineId, stateId)
@@ -318,12 +294,22 @@ namespace mstate {
     }
 
     /**
+     * (internal) UML, description
+     * @param aDescription description
+     */
+    //% shim=shimfake::simuDescriptionUml
+    export function _simuDescriptionUml(aDescription: string) {
+        // for the simulator
+        _lastDescriptionList.push(aDescription)
+    }
+
+    /**
      * (internal) UML, export
      * @param aStateMachine StateMachines
      * @param aStateName default state name
      * @param aMode 00b:json, 01b:state-diagram, 10b:trigger table, 11b:(both)
      */
-    //% shim=mstate::dummy_exportUml
+    //% shim=shimfake::simuExportUml
     export function _simuExportUml(aStateMachine: StateMachines, aStateName: string, aMode: ModeExportUML) {
         // for the simulator
         const outputJson = 0 == (aMode & 3)

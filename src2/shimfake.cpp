@@ -4,19 +4,13 @@ namespace shimfake
 {
 
     //%
-    void exportUml(int i, StringData *s, int j)
+    void simuExportUml(int i, StringData *s, int j)
     {
         // only for the simulator
     }
 
     //%
-    void descriptionUml(StringData *a)
-    {
-        // only for the simulator
-    }
-
-    //%
-    void descriptionsUml(StringData **a)
+    void simuDescriptionUml(StringData *a)
     {
         // only for the simulator
     }
