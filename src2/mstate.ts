@@ -142,7 +142,7 @@ namespace mstate {
     //% weight=110
     //% group="Transition"
     export function traverse(aStateMachine: StateMachines, index: number) {
-        // mmachine.getStateMachine(aStateMachine).traverseAt = index
+        mmachine.getStateMachine(aStateMachine).traverseAt = index
     }
 
     /**
