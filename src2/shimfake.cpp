@@ -4,37 +4,43 @@ namespace dummy
 {
 
     //%
-    void uml_expo(int i, StringData *a, int j)
+    void exportUml(int i, StringData *s, int j)
     {
         // only for the simulator
     }
 
     //%
-    void uml_desc(StringData *a)
-    {
-        // only for the simulator
-    }
-    
-    //%
-    StringData **uml_last(int i)
+    void descriptionUml(StringData *a)
     {
         // only for the simulator
     }
 
     //%
-    void uml_state(int i, int j)
+    void descriptionsUml(StringData **a)
     {
         // only for the simulator
     }
 
     //%
-    void uml_trans(int i, int j)
+    StringData **simuLastDescriptionListUML(int i)
     {
         // only for the simulator
     }
 
     //%
-    StringData *uml_name(int i)
+    void simuStateUml(int i, int j)
+    {
+        // only for the simulator
+    }
+
+    //%
+    void simuTransitionUml(int i, int j)
+    {
+        // only for the simulator
+    }
+
+    //%
+    StringData *simuConvName(int i)
     {
         // only for the simulator
     }

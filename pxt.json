@@ -10,7 +10,7 @@
         "README.md",
         "enums.d.ts",
         "shims.d.ts",
-        "src2/dummy.cpp",
+        "src2/shimfake.cpp",
         "src2/mmachine.ts",
         "src2/mstate.ts",
         "src2/mstatedevice.h"
