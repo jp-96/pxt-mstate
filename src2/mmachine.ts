@@ -81,15 +81,11 @@ namespace mmachine {
 
     export class State {
         stateId: number
-        entryActionList: Action[]
         doActivityList: DoActivity[]
-        exitActionList: Action[]
         stateTransitionList: StateTransition[]
         constructor(stateId: number) {
             this.stateId = stateId
-            this.entryActionList = []
             this.doActivityList = []
-            this.exitActionList = []
             this.stateTransitionList = []
         }
     }
@@ -212,9 +208,9 @@ namespace mmachine {
                         }
                         break;
                     case RunToCompletionStep.Reached:
-                        // exit
-                        for (const cb of this._currentState.exitActionList) {
-                            cb()
+                        // exit - doActivity nega
+                        for (const doActivity of this._currentState.doActivityList) {
+                            doActivity.execute(-1)   // counter = -1
                         }
                         // changing
                         this._currentState = this.getStateOrNew(this._traversingTargetId)
@@ -224,11 +220,7 @@ namespace mmachine {
                             intervalList.push(v.interval_ms)
                         }
                         resetDoCounterSchedules(this.machineId, intervalList, currentMillis)
-                        // entry
-                        for (const cb of this._currentState.entryActionList) {
-                            cb()
-                        }
-                        // doActivity zero
+                        // entry - doActivity zero
                         for (const doActivity of this._currentState.doActivityList) {
                             doActivity.execute(0)   // counter = 0
                         }

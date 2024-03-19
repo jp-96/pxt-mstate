@@ -365,9 +365,7 @@ namespace mstate {
                 const stateDesc = ((stateObj["stateDesc"] ? stateObj["stateDesc"] : []) as string[]).join("\\n")
                 objState = { state: { name: stateName, desc: stateDesc } }
                 if (("" == stateDesc)
-                    && (0 == state.entryActionList.length)
                     && (0 == state.doActivityList.length)
-                    && (0 == state.exitActionList.length)
                     && (0 < state.stateTransitionList.length)
                 ) {
                     const t = state.stateTransitionList.find((item) => {
