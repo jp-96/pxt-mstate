@@ -66,8 +66,8 @@ namespace mstate {
         _machineId = aStateMachine
         _stateId = mmachine.namestore.getNameIdOrNew(aStateName)
         body()
-        // // uml
-        // mstate._simuStateUml(_machineId, _stateId)
+        // uml
+        mstate._simuStateUml(_machineId, _stateId)
         _stateId = -1   // deactive
     }
 
