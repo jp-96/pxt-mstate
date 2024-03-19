@@ -63,8 +63,8 @@ namespace mstate {
     //% weight=180
     //% group="Declare"
     export function defineState(aStateMachine: StateMachines, aStateName: string, body: () => void) {
-        _stateId = mmachine.namestore.getNameIdOrNew(aStateName)
         _machineId = aStateMachine
+        _stateId = mmachine.namestore.getNameIdOrNew(aStateName)
         body()
         // // uml
         // mstate._simuStateUml(_machineId, _stateId)
@@ -86,8 +86,8 @@ namespace mstate {
     export function declareDoActivity(aEvery: number, body: (counter: number) => void) {
         if (mmachine.namestore.NONE_ID < _stateId) {
             mmachine.getState(_machineId, _stateId).doActivityList.push(new mmachine.DoActivity(aEvery, body))
-            // // uml
-            // mstate._simuStateUml(_machineId, _stateId)
+            // uml
+            mstate._simuStateUml(_machineId, _stateId)
         }
     }
 
@@ -111,8 +111,8 @@ namespace mstate {
                 targetIdList.push(mmachine.namestore.getNameIdOrNew(s))
             }
             mmachine.getState(_machineId, _stateId).stateTransitionList.push(new mmachine.StateTransition(triggerId, targetIdList, body))
-            // // uml
-            // mstate._simuTransitionUml(_machineId, _stateId)
+            // uml
+            mstate._simuTransitionUml(_machineId, _stateId)
         }
     }
 
