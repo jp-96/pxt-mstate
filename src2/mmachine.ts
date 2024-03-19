@@ -35,11 +35,12 @@ namespace mmachine {
         export const NONE_ID = 0    //  0 - INITIAL/FINAL/Completion Transition
         export const NONE_STR = ""  // "" - INITIAL/FINAL/Completion Transition
         export const storeNameId: any = {}
+        let storedCount: number = 1
         storeNameId[NONE_STR] = NONE_ID
         export function getNameIdOrNew(name: string): number {
             let id = storeNameId[name]
             if (undefined === id) {
-                id = Object.keys(storeNameId).length
+                id = ++storedCount
                 storeNameId[name] = id
             }
             return id
