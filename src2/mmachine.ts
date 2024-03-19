@@ -34,7 +34,7 @@ namespace mmachine {
         export const SYS_START_TRIGGER_ID = -1  // StarterTransition
         export const NONE_ID = 0    //  0 - INITIAL/FINAL/Completion Transition
         export const NONE_STR = ""  // "" - INITIAL/FINAL/Completion Transition
-        export let storeNameId: any = {}
+        export const storeNameId: any = {}
         storeNameId[NONE_STR] = NONE_ID
         export function getNameIdOrNew(name: string): number {
             let id = storeNameId[name]
