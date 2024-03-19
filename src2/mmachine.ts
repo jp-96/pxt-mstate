@@ -93,10 +93,10 @@ namespace mmachine {
 
     class TriggerIdArgs {
         triggerId: number
-        triggerArgs: number[]
+        triggerArgs?: number[]
         constructor(triggerId: number, triggerArgs?: number[]) {
             this.triggerId = triggerId
-            this.triggerArgs = triggerArgs || []
+            this.triggerArgs = triggerArgs
         }
     }
 
@@ -113,7 +113,7 @@ namespace mmachine {
         machineId: number
         _stateList: State[]
         _triggerEventPool: TriggerIdArgs[]
-        triggerArgs: number[]
+        triggerArgs?: number[]
         traverseAt: number   // >=0: selected, <0: unselected
         _traversingTargetId: number
         _currentState: State
@@ -122,7 +122,7 @@ namespace mmachine {
         constructor(machineId: number) {
             this._stateList = []
             this._triggerEventPool = []
-            this.triggerArgs = []
+            // this.triggerArgs = []
             this.traverseAt = StateMachine.TRAVERSE_AT_UNSELECTED
             this._traversingTargetId = namestore.NONE_ID
             this._waitPointNext = RunToCompletionStep.EvalTrigger
@@ -157,7 +157,7 @@ namespace mmachine {
             // StarterTransition
             if (namestore.NONE_ID == this._currentState.stateId) {
                 if (namestore.SYS_START_TRIGGER_ID == props.triggerId) {
-                    this._traversingTargetId = props.triggerArgs[0] || namestore.NONE_ID    // default state id, `start` function
+                    this._traversingTargetId = props.triggerArgs[0] // default state id, `start` function
                     return true
                 }
                 return false
@@ -197,7 +197,7 @@ namespace mmachine {
                             nextStep = RunToCompletionStep.EvalCompletion
                         } else {
                             nextStep = RunToCompletionStep.WaitPoint
-                            this._waitPointNext = RunToCompletionStep.EvalTrigger
+                            this._waitPointNext = RunToCompletionStep.EvalTrigger   // WaitPoint for EvalTrigger
                         }
                         break;
                     case RunToCompletionStep.EvalCompletion:
@@ -226,7 +226,7 @@ namespace mmachine {
                             doActivity.execute(0)   // counter = 0
                         }
                         nextStep = RunToCompletionStep.WaitPoint
-                        this._waitPointNext = RunToCompletionStep.EvalCompletion
+                        this._waitPointNext = RunToCompletionStep.EvalCompletion    // WaitPoint for EvalCompletion
                         queueRunToCompletion(this.machineId)
                         break;
                     default:    // WaitPoint
