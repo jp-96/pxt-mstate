@@ -293,11 +293,11 @@ namespace mmachine {
                     schedule.nextMillis = schedule.nextMillis + schedule.interval
                     schedule.counter = schedule.counter + 1
                 }
-                const doActivity = getStateMachine(schedule.machineId)._currentState.doActivityList[schedule.doActivityIndex]
-                if (doActivity) {
-                    doActivity.counterIfPositive = schedule.counter
-                    queueRunToCompletion(schedule.machineId)
-                }
+
+                getStateMachine(schedule.machineId)._currentState
+                    .doActivityList[schedule.doActivityIndex]
+                    .counterIfPositive = schedule.counter
+                queueRunToCompletion(schedule.machineId)
             }
         }
     }
