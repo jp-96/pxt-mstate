@@ -105,12 +105,13 @@ namespace mstate {
     //% group="Transition"
     export function declareStateTransition(aTriggerName: string, aTargetNameList: string[], body: () => void) {
         if (mmachine.namestore.NONE_ID < _stateId) {
-            const triggerId = mmachine.namestore.getNameIdOrNew(aTriggerName)
             const targetIdList: number[] = []
             for (const s of aTargetNameList) {
                 targetIdList.push(mmachine.namestore.getNameIdOrNew(s))
             }
-            mmachine.getState(_machineId, _stateId).stateTransitionList.push(new mmachine.StateTransition(triggerId, targetIdList, body))
+            mmachine.getState(_machineId, _stateId).stateTransitionList.push(
+                new mmachine.StateTransition(mmachine.namestore.getNameIdOrNew(aTriggerName), targetIdList, body)
+            )
             // uml
             mstate._simuTransitionUml(_machineId, _stateId)
         }
