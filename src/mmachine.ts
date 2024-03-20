@@ -47,11 +47,11 @@ namespace mmachine {
         }
     }
 
-    export type DoActivityCallback = (counter: number) => void
+    export type DoActivityCallback = (tickcount: number) => void
 
     export class DoActivity {
         interval_ms: number
-        counterIfPositive: number   // (<0): reseted, 0: reserved, (>0): to executie
+        counterIfPositive: number   // (<0): reseted, 0: reserved(entry action), (>0): to executie (do activity)
         execute: DoActivityCallback
         constructor(ms: number, cb: DoActivityCallback) {
             this.interval_ms = ms
@@ -204,7 +204,7 @@ namespace mmachine {
                     case RunToCompletionStep.Reached:
                         // exit - doActivity nega
                         for (const doActivity of this._currentState.doActivityList) {
-                            doActivity.execute(-1)   // counter = -1
+                            doActivity.execute(-1)   // tickcount = -1, exit
                         }
                         // changing
                         this._currentState = this.getStateOrNew(this._traversingTargetId)
@@ -218,7 +218,7 @@ namespace mmachine {
                         resetDoCounterSchedules(this.machineId, intervalList, currentMillis)
                         // entry - doActivity zero
                         for (const doActivity of this._currentState.doActivityList) {
-                            doActivity.execute(0)   // counter = 0
+                            doActivity.execute(0)   // tickcount = 0, entry
                         }
                         nextStep = RunToCompletionStep.WaitPoint
                         this._waitPointNext = RunToCompletionStep.EvalCompletion    // WaitPoint for EvalCompletion

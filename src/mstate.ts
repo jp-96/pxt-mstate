@@ -53,18 +53,18 @@ namespace mstate {
 
     /**
      * define state
-     * @param aStateMachine StateMachines
-     * @param aStateName state name
+     * @param machine StateMachines
+     * @param name state name
      * @param body code to run
      */
-    //% block="define $aStateMachine state $aStateName"
-    //% aStateMachine.defl=StateMachines.M0
-    //% aStateName.defl="a"
+    //% block="define $machine state $name"
+    //% machine.defl=StateMachines.M0
+    //% name.defl="a"
     //% weight=180
     //% group="Declare"
-    export function defineState(aStateMachine: StateMachines, aStateName: string, body: () => void) {
-        _machineId = aStateMachine
-        _stateId = mmachine.namestore.getNameIdOrNew(aStateName)
+    export function defineState(machine: StateMachines, name: string, body: () => void) {
+        _machineId = machine
+        _stateId = mmachine.namestore.getNameIdOrNew(name)
         body()
         // uml
         mstate._simuStateUml(_machineId, _stateId)
@@ -72,42 +72,42 @@ namespace mstate {
     }
 
     /**
-     * declare doActivity.
-     * @param aEvery interval time (milliseconds)
+     * declare state behavior, entry(tickcount==0)/do(tickcount>0)/exit(tickcount==-1).
+     * @param ms interval time (milliseconds), no doActivity occurs if set to zero
      * @param body code to run
      */
-    //% block="mstate on do every $aEvery ms $counter"
-    //% aEvery.shadow="timePicker"
-    //% aEvery.defl=1000
+    //% block="on state $ms ms $tickcount"
+    //% ms.shadow="timePicker"
+    //% ms.defl=1000
     //% handlerStatement
     //% draggableParameters
     //% weight=160
     //% group="Declare"
-    export function declareDoActivity(aEvery: number, body: (counter: number) => void) {
-        mmachine.getState(_machineId, _stateId).doActivityList.push(new mmachine.DoActivity(aEvery, body))
+    export function onState(ms: number, body: (tickcount: number) => void) {
+        mmachine.getState(_machineId, _stateId).doActivityList.push(new mmachine.DoActivity(ms, body))
         // uml
         mstate._simuStateUml(_machineId, _stateId)
     }
 
     /**
      * declare state transition.
-     * @param aTriggerName trigger name
-     * @param aTargetNameList array of target state name 
+     * @param trigger trigger name
+     * @param targets array of target state name 
      * @param body code to run
      */
-    //% block="mstate transition trigger $aTriggerName targets $aTargetNameList"
-    //% aTriggerName.defl="e"
+    //% block="on trigger $trigger targets $targets"
+    //% trigger.defl="e"
     //% draggableParameters="reporter"
     //% handlerStatement
     //% weight=130
     //% group="Declare"
-    export function declareStateTransition(aTriggerName: string, aTargetNameList: string[], body: () => void) {
+    export function onTrigger(trigger: string, targets: string[], body: () => void) {
         const targetIdList: number[] = []
-        for (const s of aTargetNameList) {
+        for (const s of targets) {
             targetIdList.push(mmachine.namestore.getNameIdOrNew(s))
         }
         mmachine.getState(_machineId, _stateId).stateTransitionList.push(
-            new mmachine.StateTransition(mmachine.namestore.getNameIdOrNew(aTriggerName), targetIdList, body)
+            new mmachine.StateTransition(mmachine.namestore.getNameIdOrNew(trigger), targetIdList, body)
         )
         // uml
         mstate._simuTransitionUml(_machineId, _stateId)
@@ -115,94 +115,94 @@ namespace mstate {
 
     /**
      * get trigger args.
-     * @param aStateMachine StateMachines
+     * @param machine StateMachines
      */
-    //% block="mstate $aStateMachine trigger args"
-    //% aStateMachine.defl=StateMachines.M0
+    //% block="trigger args $machine"
+    //% machine.defl=StateMachines.M0
     //% weight=120
     //% group="Transition"
-    export function getTriggerArgs(aStateMachine: StateMachines,): number[] {
-        return mmachine.getStateMachine(aStateMachine).triggerArgs
+    export function getArgs(machine: StateMachines,): number[] {
+        return mmachine.getStateMachine(machine).triggerArgs
     }
 
     /**
      * traverse, select target index
-     * @param aStateMachine StateMachines
+     * @param machine StateMachines
      * @param index target index, cancled = (-1)
      */
-    //% block="mstate $aStateMachine traverse at $index"
-    //% aStateMachine.defl=StateMachines.M0
-    //% index.defl=0
+    //% block="traverse $machine at $index"
+    //% machine.defl=StateMachines.M0
+    //% index.defl=-1
     //% weight=110
     //% group="Transition"
-    export function traverse(aStateMachine: StateMachines, index: number) {
-        mmachine.getStateMachine(aStateMachine).traverseAt = index
+    export function traverse(machine: StateMachines, index: number) {
+        mmachine.getStateMachine(machine).traverseAt = index
     }
 
     /**
      * send trigger with args
-     * @param aStateMachine StateMachines
-     * @param aTriggerName trigger name
-     * @param aTriggerArgs trigger args
+     * @param machine StateMachines
+     * @param trigger trigger name
+     * @param args trigger args
      */
-    //% block="send $aStateMachine $aTriggerName||$aTriggerArgs"
-    //% aStateMachine.defl=StateMachines.M0
-    //% aTriggerName.defl="e"
+    //% block="send $machine $trigger||$args"
+    //% machine.defl=StateMachines.M0
+    //% trigger.defl="e"
     //% weight=90
     //% group="Transition"
-    export function sendTriggerArgs(aStateMachine: StateMachines, aTriggerName: string, aTriggerArgs?: number[]) {
-        const triggerId = mmachine.namestore.getNameIdOrNew(aTriggerName)
-        mmachine.getStateMachine(aStateMachine).send(triggerId, aTriggerArgs)
+    export function send(machine: StateMachines, trigger: string, args?: number[]) {
+        const triggerId = mmachine.namestore.getNameIdOrNew(trigger)
+        mmachine.getStateMachine(machine).send(triggerId, args)
     }
 
     /**
      * start state machine
-     * @param aStateMachine StateMachines
-     * @param aStateName default state name
+     * @param machine StateMachines
+     * @param name default state name
      */
-    //% block="start $aStateMachine $aStateName"
-    //% aStateMachine.defl=StateMachines.M0
-    //% aStateName.defl="a"
+    //% block="start $machine $name"
+    //% machine.defl=StateMachines.M0
+    //% name.defl="a"
     //% weight=80
     //% group="Command"
-    export function start(aStateMachine: StateMachines, aStateName: string) {
-        const stateId = mmachine.namestore.getNameIdOrNew(aStateName)
-        mmachine.getStateMachine(aStateMachine).send(mmachine.namestore.SYS_START_TRIGGER_ID, [stateId])    // StarterTransition
+    export function start(machine: StateMachines, name: string) {
+        const stateId = mmachine.namestore.getNameIdOrNew(name)
+        mmachine.getStateMachine(machine).send(mmachine.namestore.SYS_START_TRIGGER_ID, [stateId])    // StarterTransition
     }
 
     /**
      * UML, description
-     * @param aDescription description
+     * @param description UML description
      */
-    //% block="(UML) description $aDescription"
-    //% aDescription.defl="a"
+    //% block="(UML) description $description"
+    //% description.defl="d"
     //% weight=70
     //% group="UML"
     //% advanced=true
     //% shim=shimfake::simuDescriptionUml
-    export function descriptionUml(aDescription: string) {
+    export function descriptionUml(description: string) {
         // uml
-        _simuDescriptionUml(aDescription)
+        _simuDescriptionUml(description)
     }
 
     /**
      * UML, export
-     * @param aStateMachine StateMachines
-     * @param aStateName default state name
-     * @param aMode output state-diagram, trigger table, JSON-diagram
+     * @param machine StateMachines
+     * @param name default state name
+     * @param mode output state-diagram, trigger table, JSON-diagram
      */
-    //% block="(UML) $aStateMachine $aStateName||$aMode"
+    //% block="(UML) $machine $name||$mode"
     //% inlineInputMode=inline
-    //% aStateMachine.defl=StateMachines.M0
-    //% aStateName.defl="a"
-    //% aMode.defl=ModeExportUML.Both
+    //% machine.defl=StateMachines.M0
+    //% name.defl="a"
+    //% mode.defl=ModeExportUML.Both
     //% weight=60
     //% group="UML"
     //% advanced=true
     //% shim=shimfake::simuExportUml
-    export function exportUml(aStateMachine: StateMachines, aStateName: string, aMode: ModeExportUML = ModeExportUML.Both) {
+    export function exportUml(machine: StateMachines, name: string, mode: ModeExportUML = ModeExportUML.Both) {
         // uml
-        _simuExportUml(aStateMachine, aStateName, aMode)
+        _simuExportUml(machine, name, mode)
     }
 
     /**
@@ -282,27 +282,28 @@ namespace mstate {
 
     /**
      * (internal) UML, description
-     * @param aDescription description
+     * @param description UML description
      */
     //% shim=shimfake::simuDescriptionUml
-    export function _simuDescriptionUml(aDescription: string) {
+    export function _simuDescriptionUml(description: string) {
         // for the simulator
-        _lastDescriptionList.push(aDescription)
+        _lastDescriptionList.push(description)
     }
 
     /**
      * (internal) UML, export
-     * @param aStateMachine StateMachines
-     * @param aStateName default state name
-     * @param aMode 00b:json, 01b:state-diagram, 10b:trigger table, 11b:(both)
+     * @param machine StateMachines
+     * @param name default state name
+     * @param mode 00b:json, 01b:state-diagram, 10b:trigger table, 11b:(both)
      */
     //% shim=shimfake::simuExportUml
-    export function _simuExportUml(aStateMachine: StateMachines, aStateName: string, aMode: ModeExportUML) {
+    export function _simuExportUml(machine: StateMachines, name: string, mode: ModeExportUML) {
         // for the simulator
         const _doc = console.log
-        const outputJson = 0 == (aMode & 3)
-        const outputTriggerTable = 0 != (aMode & 2)
-        const outputStateDiagram = 0 != (aMode & 1)
+
+        const outputJson = 0 == (mode & 3)
+        const outputTriggerTable = 0 != (mode & 2)
+        const outputStateDiagram = 0 != (mode & 1)
 
         type MbState = { state: { name: string, desc: string }, isFinalState?: boolean, isChoice?: boolean }
         type MbTrigger = { trigger: { name: string, desc: string }, isCompletion?: boolean }
@@ -351,7 +352,7 @@ namespace mstate {
         // trigger - completion transition
         mb.triggers.push({ trigger: { name: "", desc: "(completion transition)" }, isCompletion: true })
         // build states and triggers
-        for (const state of mmachine.getStateMachine(aStateMachine)._stateList) {
+        for (const state of mmachine.getStateMachine(machine)._stateList) {
             const stateObj = state as any
 
             // state
@@ -404,7 +405,7 @@ namespace mstate {
             }
         }
         // build transitions
-        for (const state of mmachine.getStateMachine(aStateMachine)._stateList) {
+        for (const state of mmachine.getStateMachine(machine)._stateList) {
 
             // state
             const stateName = mstate._simuConvName(state.stateId)
@@ -516,7 +517,7 @@ namespace mstate {
         }
         if (outputStateDiagram) {
             // statemachine
-            _doc("state __M" + aStateMachine + "__ {")
+            _doc("state __M" + machine + "__ {")
 
             // states <<choise>>
             for (const stateItem of mb.states) {
@@ -526,7 +527,7 @@ namespace mstate {
             }
 
             // start
-            _doc("[*] -> " + aStateName + " : <<start>>")
+            _doc("[*] -> " + name + " : <<start>>")
 
             // states
             for (const stateItem of mb.states) {
@@ -573,7 +574,7 @@ namespace mstate {
 
         if (outputTriggerTable) {
             // trigger table
-            _doc("json M" + aStateMachine + " {")
+            _doc("json M" + machine + " {")
             // build json table rows
             type TbRow = { key: string, value: any[] }
             const headerKeyTrigger = "**trigger**"
@@ -621,7 +622,7 @@ namespace mstate {
                 _doc('"' + tbRow.key + '" : ' + JSON.stringify(tbRow.value) + " ,")
             }
             // output defalut row
-            _doc('"**__default__**" : ["' + aStateName + '"]')
+            _doc('"**__default__**" : ["' + name + '"]')
             _doc("}") // trigger table
 
             _doc("' ")
