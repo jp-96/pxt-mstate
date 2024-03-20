@@ -55,17 +55,7 @@ namespace mmachine {
         execute: DoActivityCallback
         constructor(ms: number, cb: DoActivityCallback) {
             this.interval_ms = ms
-            this.counterIfPositive = -1  // reset
             this.execute = cb
-        }
-        executeIf(): boolean {
-            const counter = this.counterIfPositive
-            this.counterIfPositive = -1  // reset
-            if (0 < counter) {
-                this.execute(counter)
-                return true
-            }
-            return false
         }
     }
 
@@ -146,7 +136,10 @@ namespace mmachine {
         _procEvalDoCounter() {
             let executed = false
             for (const doActivity of this._currentState.doActivityList) {
-                if (doActivity.executeIf()) {
+                if (0 < doActivity.counterIfPositive) {
+                    const counter = doActivity.counterIfPositive    // cached
+                    doActivity.counterIfPositive = -1               // reset
+                    doActivity.execute(counter)
                     executed = true
                 }
             }
@@ -217,9 +210,9 @@ namespace mmachine {
                         this._currentState = this.getStateOrNew(this._traversingTargetId)
                         const intervalList: number[] = []
                         if (namestore.NONE_ID != this._traversingTargetId) {
-                            for (const v of this._currentState.doActivityList) {
-                                v.counterIfPositive = -1  // clear
-                                intervalList.push(v.interval_ms)
+                            for (const doActivity of this._currentState.doActivityList) {
+                                doActivity.counterIfPositive = -1               // reset
+                                intervalList.push(doActivity.interval_ms)
                             }
                         }
                         resetDoCounterSchedules(this.machineId, intervalList, currentMillis)
