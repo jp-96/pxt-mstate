@@ -216,9 +216,11 @@ namespace mmachine {
                         // changing
                         this._currentState = this.getStateOrNew(this._traversingTargetId)
                         const intervalList: number[] = []
-                        for (const v of this._currentState.doActivityList) {
-                            v.counterIfPositive = -1  // clear
-                            intervalList.push(v.interval_ms)
+                        if (namestore.NONE_ID != this._traversingTargetId) {
+                            for (const v of this._currentState.doActivityList) {
+                                v.counterIfPositive = -1  // clear
+                                intervalList.push(v.interval_ms)
+                            }
                         }
                         resetDoCounterSchedules(this.machineId, intervalList, currentMillis)
                         // entry - doActivity zero

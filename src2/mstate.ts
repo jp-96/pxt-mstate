@@ -84,11 +84,9 @@ namespace mstate {
     //% weight=160
     //% group="Declare"
     export function declareDoActivity(aEvery: number, body: (counter: number) => void) {
-        if (mmachine.namestore.NONE_ID < _stateId) {
-            mmachine.getState(_machineId, _stateId).doActivityList.push(new mmachine.DoActivity(aEvery, body))
-            // uml
-            mstate._simuStateUml(_machineId, _stateId)
-        }
+        mmachine.getState(_machineId, _stateId).doActivityList.push(new mmachine.DoActivity(aEvery, body))
+        // uml
+        mstate._simuStateUml(_machineId, _stateId)
     }
 
     /**
