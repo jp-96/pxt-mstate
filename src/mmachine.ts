@@ -34,12 +34,13 @@ namespace mmachine {
         export const SYS_START_TRIGGER_ID = -1  // StarterTransition
         export const NONE_ID = 0    //  0 - INITIAL/FINAL/Completion Transition
         export const NONE_STR = ""  // "" - INITIAL/FINAL/Completion Transition
-        export let storeNameId: any = {}
+        export const storeNameId: any = {}
+        let storedCount: number = 1
         storeNameId[NONE_STR] = NONE_ID
         export function getNameIdOrNew(name: string): number {
             let id = storeNameId[name]
             if (undefined === id) {
-                id = Object.keys(storeNameId).length
+                id = ++storedCount
                 storeNameId[name] = id
             }
             return id
@@ -54,17 +55,7 @@ namespace mmachine {
         execute: DoActivityCallback
         constructor(ms: number, cb: DoActivityCallback) {
             this.interval_ms = ms
-            this.counterIfPositive = -1  // reset
             this.execute = cb
-        }
-        executeIf(): boolean {
-            const counter = this.counterIfPositive
-            this.counterIfPositive = -1  // reset
-            if (0 < counter) {
-                this.execute(counter)
-                return true
-            }
-            return false
         }
     }
 
@@ -81,25 +72,21 @@ namespace mmachine {
 
     export class State {
         stateId: number
-        entryActionList: Action[]
         doActivityList: DoActivity[]
-        exitActionList: Action[]
         stateTransitionList: StateTransition[]
         constructor(stateId: number) {
             this.stateId = stateId
-            this.entryActionList = []
             this.doActivityList = []
-            this.exitActionList = []
             this.stateTransitionList = []
         }
     }
 
     class TriggerIdArgs {
         triggerId: number
-        triggerArgs: number[]
+        triggerArgs?: number[]
         constructor(triggerId: number, triggerArgs?: number[]) {
             this.triggerId = triggerId
-            this.triggerArgs = triggerArgs || []
+            this.triggerArgs = triggerArgs
         }
     }
 
@@ -116,7 +103,7 @@ namespace mmachine {
         machineId: number
         _stateList: State[]
         _triggerEventPool: TriggerIdArgs[]
-        triggerArgs: number[]
+        triggerArgs?: number[]
         traverseAt: number   // >=0: selected, <0: unselected
         _traversingTargetId: number
         _currentState: State
@@ -125,7 +112,7 @@ namespace mmachine {
         constructor(machineId: number) {
             this._stateList = []
             this._triggerEventPool = []
-            this.triggerArgs = []
+            // this.triggerArgs = []
             this.traverseAt = StateMachine.TRAVERSE_AT_UNSELECTED
             this._traversingTargetId = namestore.NONE_ID
             this._waitPointNext = RunToCompletionStep.EvalTrigger
@@ -149,7 +136,10 @@ namespace mmachine {
         _procEvalDoCounter() {
             let executed = false
             for (const doActivity of this._currentState.doActivityList) {
-                if (doActivity.executeIf()) {
+                if (0 < doActivity.counterIfPositive) {
+                    const counter = doActivity.counterIfPositive    // cached
+                    doActivity.counterIfPositive = -1               // reset
+                    doActivity.execute(counter)
                     executed = true
                 }
             }
@@ -160,7 +150,7 @@ namespace mmachine {
             // StarterTransition
             if (namestore.NONE_ID == this._currentState.stateId) {
                 if (namestore.SYS_START_TRIGGER_ID == props.triggerId) {
-                    this._traversingTargetId = props.triggerArgs[0] || namestore.NONE_ID    // default state id, `start` function
+                    this._traversingTargetId = props.triggerArgs[0] // default state id, `start` function
                     return true
                 }
                 return false
@@ -200,7 +190,7 @@ namespace mmachine {
                             nextStep = RunToCompletionStep.EvalCompletion
                         } else {
                             nextStep = RunToCompletionStep.WaitPoint
-                            this._waitPointNext = RunToCompletionStep.EvalTrigger
+                            this._waitPointNext = RunToCompletionStep.EvalTrigger   // WaitPoint for EvalTrigger
                         }
                         break;
                     case RunToCompletionStep.EvalCompletion:
@@ -212,28 +202,26 @@ namespace mmachine {
                         }
                         break;
                     case RunToCompletionStep.Reached:
-                        // exit
-                        for (const cb of this._currentState.exitActionList) {
-                            cb()
+                        // exit - doActivity nega
+                        for (const doActivity of this._currentState.doActivityList) {
+                            doActivity.execute(-1)   // counter = -1
                         }
                         // changing
                         this._currentState = this.getStateOrNew(this._traversingTargetId)
                         const intervalList: number[] = []
-                        for (const v of this._currentState.doActivityList) {
-                            v.counterIfPositive = -1  // clear
-                            intervalList.push(v.interval_ms)
+                        if (namestore.NONE_ID != this._traversingTargetId) {
+                            for (const doActivity of this._currentState.doActivityList) {
+                                doActivity.counterIfPositive = -1               // reset
+                                intervalList.push(doActivity.interval_ms)
+                            }
                         }
                         resetDoCounterSchedules(this.machineId, intervalList, currentMillis)
-                        // entry
-                        for (const cb of this._currentState.entryActionList) {
-                            cb()
-                        }
-                        // doActivity zero
+                        // entry - doActivity zero
                         for (const doActivity of this._currentState.doActivityList) {
                             doActivity.execute(0)   // counter = 0
                         }
                         nextStep = RunToCompletionStep.WaitPoint
-                        this._waitPointNext = RunToCompletionStep.EvalCompletion
+                        this._waitPointNext = RunToCompletionStep.EvalCompletion    // WaitPoint for EvalCompletion
                         queueRunToCompletion(this.machineId)
                         break;
                     default:    // WaitPoint
@@ -301,11 +289,11 @@ namespace mmachine {
                     schedule.nextMillis = schedule.nextMillis + schedule.interval
                     schedule.counter = schedule.counter + 1
                 }
-                const doActivity = getStateMachine(schedule.machineId)._currentState.doActivityList[schedule.doActivityIndex]
-                if (doActivity) {
-                    doActivity.counterIfPositive = schedule.counter
-                    queueRunToCompletion(schedule.machineId)
-                }
+
+                getStateMachine(schedule.machineId)._currentState
+                    .doActivityList[schedule.doActivityIndex]
+                    .counterIfPositive = schedule.counter
+                queueRunToCompletion(schedule.machineId)
             }
         }
     }
