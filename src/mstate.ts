@@ -72,7 +72,7 @@ namespace mstate {
     }
 
     /**
-     * declare state behavior, entry(tickcount==0)/do(tickcount>0)/exit(tickcount==-1).
+     * declare state behavior, entry(tickcount==0) and doActivity(tickcount>0)
      * @param ms interval time (milliseconds), no doActivity occurs if set to zero
      * @param body code to run
      */
@@ -85,6 +85,20 @@ namespace mstate {
     //% group="Declare"
     export function onState(ms: number, body: (tickcount: number) => void) {
         mmachine.getState(_machineId, _stateId).doActivityList.push(new mmachine.DoActivity(ms, body))
+        // uml
+        mstate._simuStateUml(_machineId, _stateId)
+    }
+
+    /**
+     * declare exit action.
+     * @param body code to run
+     */
+    //% block="on exit"
+    //% handlerStatement
+    //% weight=150
+    //% group="Declare"
+    export function onExit(body: () => void) {
+        mmachine.getState(_machineId, _stateId).exitActionList.push(body)
         // uml
         mstate._simuStateUml(_machineId, _stateId)
     }

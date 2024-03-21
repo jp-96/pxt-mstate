@@ -73,10 +73,12 @@ namespace mmachine {
     export class State {
         stateId: number
         doActivityList: DoActivity[]
+        exitActionList: Action[]
         stateTransitionList: StateTransition[]
         constructor(stateId: number) {
             this.stateId = stateId
             this.doActivityList = []
+            this.exitActionList = []
             this.stateTransitionList = []
         }
     }
@@ -202,9 +204,9 @@ namespace mmachine {
                         }
                         break;
                     case RunToCompletionStep.Reached:
-                        // exit - doActivity nega
-                        for (const doActivity of this._currentState.doActivityList) {
-                            doActivity.execute(-1)   // tickcount = -1, exit
+                        // exit
+                        for (const cb of this._currentState.exitActionList) {
+                            cb()
                         }
                         // changing
                         this._currentState = this.getStateOrNew(this._traversingTargetId)

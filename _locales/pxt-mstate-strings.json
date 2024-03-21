@@ -9,6 +9,7 @@
   "mstate.descriptionUml|block": "(UML) description $description",
   "mstate.exportUml|block": "(UML) $machine $name||$mode",
   "mstate.getArgs|block": "trigger args $machine",
+  "mstate.onExit|block": "on exit",
   "mstate.onState|block": "on state $ms ms $tickcount",
   "mstate.onTrigger|block": "on trigger $trigger targets $targets",
   "mstate.send|block": "send $machine $trigger||$args",
