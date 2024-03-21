@@ -16,17 +16,20 @@ function blinkLED () {
 // - LED off
 mstate.defineState(StateMachines.M0, "Off", function () {
     mstate.descriptionUml("LED off")
-    mstate.declareEntry(function () {
-        basic.clearScreen()
+    mstate.onState(0, function (tickcount) {
+        if (0 == tickcount) {
+            basic.clearScreen()
+        } else if (0 > tickcount) {
+            led.setBrightness(255)
+            basic.showString("On!")
+        }
     })
-    mstate.declareExit(function () {
-        led.setBrightness(255)
-        basic.showString("On!")
+    mstate.onTrigger("A", ["On"], function () {
+        mstate.traverse(StateMachines.M0, 0)
     })
-    mstate.declareSimpleTransition("A", "On")
 })
 input.onButtonPressed(Button.A, function () {
-    mstate.sendTrigger(StateMachines.M0, "A")
+    mstate.send(StateMachines.M0, "A")
 })
 // State Fast
 // entry/
@@ -35,48 +38,62 @@ input.onButtonPressed(Button.A, function () {
 // - LED blink
 // [Auto Mode] 15times
 mstate.defineState(StateMachines.M0, "Fast", function () {
-    mstate.declareEntry(function () {
-        times = 0
-    })
     mstate.descriptionUml("LED blink (200ms)")
-    mstate.declareDoActivity(200, function (counter) {
-        if (1 == auto && 15 < counter) {
-            times = 15
-        } else if (25 < counter) {
-            times = 25
-        } else {
+    mstate.onState(200, function (tickcount) {
+        if (0 == tickcount) {
+            times = 0
             blinkLED()
+        } else if (0 < tickcount) {
+            if (1 == auto && 15 < tickcount) {
+                times = 15
+            } else if (25 < tickcount) {
+                times = 25
+            } else {
+                blinkLED()
+            }
         }
     })
-    mstate.descriptionsUml(["auto && 15times", ">5s"])
-    mstate.declareStateTransition("", ["Slow", "On"], function () {
+    mstate.descriptionUml("auto && 15times")
+    mstate.descriptionUml(">5s")
+    mstate.onTrigger("", ["Slow", "On"], function () {
         if (15 == times) {
             mstate.traverse(StateMachines.M0, 0)
         } else if (25 == times) {
             mstate.traverse(StateMachines.M0, 1)
         }
     })
-    mstate.declareSimpleTransition("A", "On")
+    mstate.onTrigger("A", ["On"], function () {
+        mstate.traverse(StateMachines.M0, 0)
+    })
     mstate.descriptionUml(":")
-    mstate.declareSimpleTransition("B", "Off")
+    mstate.onTrigger("B", ["Off"], function () {
+        mstate.traverse(StateMachines.M0, 0)
+    })
 })
 // Stete On
 // entry/
 // - Initialize On/Blink
 // - LED Heart
 mstate.defineState(StateMachines.M0, "On", function () {
-    mstate.descriptionsUml(["auto=OFF", "Heart icon"])
-    mstate.declareEntry(function () {
-        auto = 0
-        led.setBrightness(255)
-        blinkNext = 0
-        basic.showIcon(IconNames.Heart)
+    mstate.descriptionUml("auto=OFF")
+    mstate.descriptionUml("Heart icon")
+    mstate.onState(0, function (tickcount) {
+        if (0 == tickcount) {
+            auto = 0
+            led.setBrightness(255)
+            blinkNext = 0
+            basic.showIcon(IconNames.Heart)
+        }
     })
-    mstate.declareSimpleTransition("A", "Slow")
+    mstate.onTrigger("A", ["Slow"], function () {
+        mstate.traverse(StateMachines.M0, 0)
+    })
     mstate.descriptionUml(":")
-    mstate.declareSimpleTransition("B", "Off")
+    mstate.onTrigger("B", ["Off"], function () {
+        mstate.traverse(StateMachines.M0, 0)
+    })
     mstate.descriptionUml("/auto=ON")
-    mstate.declareStateTransition("A+B", ["Slow"], function () {
+    mstate.onTrigger("A+B", ["Slow"], function () {
         // effect
         auto = 1
         mstate.traverse(StateMachines.M0, 0)
@@ -89,37 +106,41 @@ mstate.defineState(StateMachines.M0, "On", function () {
 // - LED blink
 // [Auto Mode] 6times
 mstate.defineState(StateMachines.M0, "Slow", function () {
-    mstate.declareEntry(function () {
-        times = 0
-    })
     mstate.descriptionUml("LED blink (500ms)")
-    mstate.declareDoActivity(500, function (counter) {
-        if (1 == auto && 6 <= counter) {
-            times = 6
-        } else {
+    mstate.onState(500, function (tickcount) {
+        if (0 == tickcount) {
+            times = 0
             blinkLED()
+        } else if (0 < tickcount) {
+            if (1 == auto && 6 <= tickcount) {
+                times = 6
+            } else {
+                blinkLED()
+            }
         }
     })
     mstate.descriptionUml("auto && 6times")
-    mstate.declareStateTransition("", ["Fast"], function () {
+    mstate.onTrigger("", ["Fast"], function () {
         if (6 == times) {
             mstate.traverse(StateMachines.M0, 0)
         }
     })
     mstate.descriptionUml("/auto=OFF")
-    mstate.declareStateTransition("A", ["Fast"], function () {
+    mstate.onTrigger("A", ["Fast"], function () {
         // effect
         auto = 0
         mstate.traverse(StateMachines.M0, 0)
     })
     mstate.descriptionUml(":")
-    mstate.declareSimpleTransition("B", "Off")
+    mstate.onTrigger("B", ["Off"], function () {
+        mstate.traverse(StateMachines.M0, 0)
+    })
 })
 input.onButtonPressed(Button.AB, function () {
-    mstate.sendTrigger(StateMachines.M0, "A+B")
+    mstate.send(StateMachines.M0, "A+B")
 })
 input.onButtonPressed(Button.B, function () {
-    mstate.sendTrigger(StateMachines.M0, "B")
+    mstate.send(StateMachines.M0, "B")
 })
 let auto = 0
 let times = 0
