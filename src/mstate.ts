@@ -22,7 +22,8 @@ enum ModeExportUML {
  * mstate blocks: The pxt-mstate extension is a user-defined extension for micro:bit that simplifies state machine coding and visualization using block coding and state diagrams.
  */
 //% weight=100 color="#40A070" icon="\uf362"
-//% groups="['Command', 'Declare', 'Transition', 'UML]"
+//% groups="['Declare', 'Transition', 'Command', 'UML']"
+//% block="mstate"
 namespace mstate {
 
     /**
@@ -60,8 +61,7 @@ namespace mstate {
     //% block="define $machine state $name"
     //% machine.defl=StateMachines.M0
     //% name.defl="a"
-    //% weight=180
-    //% group="Declare"
+    //% weight=113
     export function defineState(machine: StateMachines, name: string, body: () => void) {
         _machineId = machine
         _stateId = mmachine.namestore.getNameIdOrNew(name)
@@ -72,39 +72,7 @@ namespace mstate {
     }
 
     /**
-     * declare state behavior, entry(tickcount==0) and doActivity(tickcount>0)
-     * @param ms interval time (milliseconds), no doActivity occurs if set to zero
-     * @param body code to run
-     */
-    //% block="on state $ms ms $tickcount"
-    //% ms.shadow="timePicker"
-    //% ms.defl=1000
-    //% handlerStatement
-    //% draggableParameters
-    //% weight=160
-    //% group="Declare"
-    export function onState(ms: number, body: (tickcount: number) => void) {
-        mmachine.getState(_machineId, _stateId).doActivityList.push(new mmachine.DoActivity(ms, body))
-        // uml
-        mstate._simuStateUml(_machineId, _stateId)
-    }
-
-    /**
-     * declare exit action.
-     * @param body code to run
-     */
-    //% block="on exit"
-    //% handlerStatement
-    //% weight=150
-    //% group="Declare"
-    export function onExit(body: () => void) {
-        mmachine.getState(_machineId, _stateId).exitActionList.push(body)
-        // uml
-        mstate._simuStateUml(_machineId, _stateId)
-    }
-
-    /**
-     * declare state transition.
+     * declare state transition
      * @param trigger trigger name
      * @param targets array of target state name 
      * @param body code to run
@@ -113,8 +81,7 @@ namespace mstate {
     //% trigger.defl="e"
     //% draggableParameters="reporter"
     //% handlerStatement
-    //% weight=130
-    //% group="Declare"
+    //% weight=112
     export function onTrigger(trigger: string, targets: string[], body: () => void) {
         const targetIdList: number[] = []
         for (const s of targets) {
@@ -128,12 +95,43 @@ namespace mstate {
     }
 
     /**
-     * get trigger args.
+     * declare state behavior; entry(tickcount==0), doActivity(tickcount>0)
+     * at each interval time, tickcount is incremented and called back as doActivity
+     * @param ms interval time (milliseconds), no doActivity occurs if set to zero
+     * @param body code to run
+     */
+    //% block="on state $ms ms $tickcount"
+    //% ms.shadow="timePicker"
+    //% ms.defl=1000
+    //% handlerStatement
+    //% draggableParameters
+    //% weight=111
+    export function onState(ms: number, body: (tickcount: number) => void) {
+        mmachine.getState(_machineId, _stateId).doActivityList.push(new mmachine.DoActivity(ms, body))
+        // uml
+        mstate._simuStateUml(_machineId, _stateId)
+    }
+
+    /**
+     * declare exit action.
+     * @param body code to run
+     */
+    //% block="on exit"
+    //% handlerStatement
+    //% weight=110
+    export function onExit(body: () => void) {
+        mmachine.getState(_machineId, _stateId).exitActionList.push(body)
+        // uml
+        mstate._simuStateUml(_machineId, _stateId)
+    }
+
+    /**
+     * get trigger args
      * @param machine StateMachines
      */
     //% block="trigger args $machine"
     //% machine.defl=StateMachines.M0
-    //% weight=120
+    //% weight=102
     //% group="Transition"
     export function getArgs(machine: StateMachines,): number[] {
         return mmachine.getStateMachine(machine).triggerArgs
@@ -147,7 +145,7 @@ namespace mstate {
     //% block="traverse $machine at $index"
     //% machine.defl=StateMachines.M0
     //% index.defl=-1
-    //% weight=110
+    //% weight=101
     //% group="Transition"
     export function traverse(machine: StateMachines, index: number) {
         mmachine.getStateMachine(machine).traverseAt = index
@@ -162,7 +160,7 @@ namespace mstate {
     //% block="send $machine $trigger||$args"
     //% machine.defl=StateMachines.M0
     //% trigger.defl="e"
-    //% weight=90
+    //% weight=100
     //% group="Transition"
     export function send(machine: StateMachines, trigger: string, args?: number[]) {
         const triggerId = mmachine.namestore.getNameIdOrNew(trigger)
@@ -190,8 +188,7 @@ namespace mstate {
      */
     //% block="(UML) description $description"
     //% description.defl="d"
-    //% weight=70
-    //% group="UML"
+    //% weight=71
     //% advanced=true
     //% shim=shimfake::simuDescriptionUml
     export function descriptionUml(description: string) {
@@ -210,7 +207,7 @@ namespace mstate {
     //% machine.defl=StateMachines.M0
     //% name.defl="a"
     //% mode.defl=ModeExportUML.Both
-    //% weight=60
+    //% weight=70
     //% group="UML"
     //% advanced=true
     //% shim=shimfake::simuExportUml
