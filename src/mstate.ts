@@ -168,6 +168,32 @@ namespace mstate {
     }
 
     /**
+     * whether the transition is caused by a start command
+     * @param machine StateMachines
+     */
+    //% block="by start $machine"
+    //% machine.defl=StateMachines.M0
+    //% weight=100
+    //% group="Transition"
+    //% advanced=true
+    export function isCausedByStart(machine: StateMachines): boolean {
+        return mmachine.TraversingReason.StartCommand == mmachine.getStateMachine(machine).traversingReason
+    }
+    
+    /**
+     * whether the transition is caused by a stop command
+     * @param machine StateMachines
+     */
+    //% block="by stop $machine"
+    //% machine.defl=StateMachines.M0
+    //% weight=100
+    //% group="Transition"
+    //% advanced=true
+    export function isCausedByStop(machine: StateMachines): boolean {
+        return mmachine.TraversingReason.StopCommand == mmachine.getStateMachine(machine).traversingReason
+    }
+
+    /**
      * start state machine
      * @param machine StateMachines
      * @param name default state name

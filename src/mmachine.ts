@@ -100,6 +100,12 @@ namespace mmachine {
         Reached,
     }
 
+    export enum TraversingReason {
+        Transition,     // completion transition or trigger
+        StartCommand,
+        StopCommand
+    }
+
     export class StateMachine {
         static readonly TRAVERSE_AT_UNSELECTED = -1 // (default) unselected
 
@@ -111,6 +117,7 @@ namespace mmachine {
         _traversingTargetId: number
         _currentState: State
         _waitPointNext: RunToCompletionStep
+        traversingReason: TraversingReason
 
         constructor(machineId: number) {
             this._stateList = []
@@ -119,6 +126,7 @@ namespace mmachine {
             this.traverseAt = StateMachine.TRAVERSE_AT_UNSELECTED
             this._traversingTargetId = namestore.NONE_ID
             this._waitPointNext = RunToCompletionStep.EvalTrigger
+            this.traversingReason = TraversingReason.StopCommand
 
             this.machineId = machineId
 
@@ -154,6 +162,7 @@ namespace mmachine {
             if (namestore.NONE_ID == this._currentState.stateId) {
                 if (namestore.SYS_START_TRIGGER_ID == props.triggerId) {
                     this._traversingTargetId = props.triggerArgs[0] // default state id, `start` function
+                    this.traversingReason = TraversingReason.StartCommand
                     return true
                 }
                 return false
@@ -161,6 +170,7 @@ namespace mmachine {
             // trainsition to FINAL
             if (namestore.SYS_FINAL_TRIGGER_ID == props.triggerId) {
                 this._traversingTargetId = namestore.NONE_ID
+                this.traversingReason = TraversingReason.StopCommand
                 return true
             }
             // StateTransition
@@ -171,6 +181,7 @@ namespace mmachine {
                 stateTransition.execute()                               // callback body(), evaluating
                 if (0 <= this.traverseAt && stateTransition.targetIdList.length > this.traverseAt) {
                     this._traversingTargetId = stateTransition.targetIdList[this.traverseAt]
+                    this.traversingReason = TraversingReason.Transition
                     return true
                 }
             }
