@@ -126,12 +126,28 @@ namespace mstate {
     }
 
     /**
+     * send trigger with args
+     * @param machine StateMachines
+     * @param trigger trigger name
+     * @param args trigger args
+     */
+    //% block="send $machine $trigger||$args"
+    //% machine.defl=StateMachines.M0
+    //% trigger.defl="e"
+    //% weight=102
+    //% group="Transition"
+    export function send(machine: StateMachines, trigger: string, args?: number[]) {
+        const triggerId = mmachine.namestore.getNameIdOrNew(trigger)
+        mmachine.getStateMachine(machine).send(triggerId, args)
+    }
+
+    /**
      * get trigger args
      * @param machine StateMachines
      */
     //% block="trigger args $machine"
     //% machine.defl=StateMachines.M0
-    //% weight=102
+    //% weight=101
     //% group="Transition"
     export function getArgs(machine: StateMachines,): number[] {
         return mmachine.getStateMachine(machine).triggerArgs
@@ -145,26 +161,10 @@ namespace mstate {
     //% block="traverse $machine at $index"
     //% machine.defl=StateMachines.M0
     //% index.defl=-1
-    //% weight=101
+    //% weight=100
     //% group="Transition"
     export function traverse(machine: StateMachines, index: number) {
         mmachine.getStateMachine(machine).traverseAt = index
-    }
-
-    /**
-     * send trigger with args
-     * @param machine StateMachines
-     * @param trigger trigger name
-     * @param args trigger args
-     */
-    //% block="send $machine $trigger||$args"
-    //% machine.defl=StateMachines.M0
-    //% trigger.defl="e"
-    //% weight=100
-    //% group="Transition"
-    export function send(machine: StateMachines, trigger: string, args?: number[]) {
-        const triggerId = mmachine.namestore.getNameIdOrNew(trigger)
-        mmachine.getStateMachine(machine).send(triggerId, args)
     }
 
     /**
@@ -175,11 +175,24 @@ namespace mstate {
     //% block="start $machine $name"
     //% machine.defl=StateMachines.M0
     //% name.defl="a"
-    //% weight=80
+    //% weight=81
     //% group="Command"
     export function start(machine: StateMachines, name: string) {
         const stateId = mmachine.namestore.getNameIdOrNew(name)
         mmachine.getStateMachine(machine).send(mmachine.namestore.SYS_START_TRIGGER_ID, [stateId])    // StarterTransition
+    }
+
+    /**
+     * stop state machine
+     * @param machine StateMachines
+     */
+    //% block="stop $machine"
+    //% machine.defl=StateMachines.M0
+    //% weight=80
+    //% group="Command"
+    //% advanced=true
+    export function stop(machine: StateMachines) {
+        mmachine.getStateMachine(machine).send(mmachine.namestore.SYS_FINAL_TRIGGER_ID, []) // transition to FINAL
     }
 
     /**
@@ -189,6 +202,7 @@ namespace mstate {
     //% block="(UML) description $description"
     //% description.defl="d"
     //% weight=71
+    //% group="UML"
     //% advanced=true
     //% shim=shimfake::simuDescriptionUml
     export function descriptionUml(description: string) {

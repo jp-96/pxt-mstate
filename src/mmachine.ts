@@ -32,6 +32,7 @@ namespace mmachine {
 
     export namespace namestore {
         export const SYS_START_TRIGGER_ID = -1  // StarterTransition
+        export const SYS_FINAL_TRIGGER_ID = -2  // transition to FINAL
         export const NONE_ID = 0    //  0 - INITIAL/FINAL/Completion Transition
         export const NONE_STR = ""  // "" - INITIAL/FINAL/Completion Transition
         export const storeNameId: any = {}
@@ -156,6 +157,11 @@ namespace mmachine {
                     return true
                 }
                 return false
+            }
+            // trainsition to FINAL
+            if (namestore.SYS_FINAL_TRIGGER_ID == props.triggerId) {
+                this._traversingTargetId = namestore.NONE_ID
+                return true
             }
             // StateTransition
             const stateTransitionList = this._currentState.stateTransitionList.filter(item => props.triggerId == item.triggerId)

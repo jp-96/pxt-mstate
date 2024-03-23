@@ -14,6 +14,7 @@
   "mstate.onTrigger|block": "on trigger $trigger targets $targets",
   "mstate.send|block": "send $machine $trigger||$args",
   "mstate.start|block": "start $machine $name",
+  "mstate.stop|block": "stop $machine",
   "mstate.traverse|block": "traverse $machine at $index",
   "mstate|block": "mstate",
   "{id:category}Mmachine": "Mmachine",

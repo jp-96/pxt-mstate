@@ -47,6 +47,8 @@
   "mstate.start": "start state machine",
   "mstate.start|param|machine": "StateMachines",
   "mstate.start|param|name": "default state name",
+  "mstate.stop": "stop state machine",
+  "mstate.stop|param|machine": "StateMachines",
   "mstate.traverse": "traverse, select target index",
   "mstate.traverse|param|index": "target index, cancled = (-1)",
   "mstate.traverse|param|machine": "StateMachines"
