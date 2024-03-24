@@ -44,7 +44,7 @@ This image may take a few minutes to refresh.
 
 **Example**
 
-```javascript
+```blocks
 mstate.defineState(StateMachines.M0, "State1", function () {
     mstate.descriptionUml("Blink Heart Icon")
     mstate.onState(500, function (tickcount) {
