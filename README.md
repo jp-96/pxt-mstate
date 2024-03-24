@@ -44,7 +44,7 @@ This image may take a few minutes to refresh.
 
 **Example**
 
-```javascript
+```blocks
 function blinkLED (enabled: boolean) {
     if (!(enabled)) {
         blink = 1
