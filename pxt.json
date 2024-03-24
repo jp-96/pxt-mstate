@@ -1,6 +1,6 @@
 {
     "name": "pxt-mstate",
-    "version": "0.9.3",
+    "version": "0.10.0",
     "description": "The pxt-mstate extension is a user-defined extension for micro:bit that simplifies state machine coding and visualization using block coding and state diagrams.",
     "license": "MIT",
     "dependencies": {
@@ -10,11 +10,10 @@
         "README.md",
         "enums.d.ts",
         "shims.d.ts",
+        "src/shimfake.cpp",
         "src/mmachine.ts",
         "src/mstate.ts",
-        "src/mstatedevice.h",
-        "src/mstateuml.cpp",
-        "src/mstateuml.ts"
+        "src/mstatedevice.h"
     ],
     "testFiles": [
         "test.ts"
